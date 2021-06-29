@@ -51,13 +51,18 @@ app.delete('/api/persons/:id', (req, res) => {
 
 const generateID = () => {
     return Math.floor(Math.random() * 100000);
-}
+};
 
 app.post('/api/persons', (request, response) => {
     const newPerson = request.body;
+    const match = persons.filter(person => person.name.includes(newPerson.name)).length > 0 ? true : false;
 
     if (!newPerson) {
         response.status(404).json({ error: 'content missing'});
+    } else if (!newPerson.name || !newPerson.number) {
+        response.status(404).json({error: "Missing Name or Number"})
+    } else if (match) {
+        response.status(404).json({error: "Person already exists"});
     } else {
         const person = {
             name: newPerson.name,
