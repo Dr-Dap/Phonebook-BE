@@ -2,7 +2,18 @@ const express = require('express');
 const { response } = require('express');
 const app = express();
 
-app.use(express.json())
+var morgan = require('morgan');
+
+morgan.token('post', (request) => {
+    if (request.method === 'POST')
+      return JSON.stringify(request.body)
+    else
+      return ''
+  });
+
+  morgan.format('postFormat', ':method :url :status :res[content-length] - :response-time ms :post');
+
+app.use(morgan('postFormat'));
 
 let persons = [
     {
@@ -79,9 +90,7 @@ app.post('/api/persons', (request, response) => {
 app.get('/info', (request, response) => {
     const personsSum = persons.length;
     response.send(`<p>Phonebook has ${personsSum} persons</p><p>${Date()}</p>`)
-})
-
-
+});
 
 const PORT = 3001;
 app.listen(PORT, () => {
